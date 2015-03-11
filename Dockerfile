@@ -21,6 +21,8 @@ RUN apt-get update \
         libssl-dev \
         liblzma-dev \
         libevent1-dev \
+        libxml2-dev \
+        libxslt1-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . /docker-registry
@@ -35,6 +37,9 @@ RUN pip install file:///docker-registry#egg=docker-registry[bugsnag,newrelic,cor
 RUN patch \
  $(python -c 'import boto; import os; print os.path.dirname(boto.__file__)')/connection.py \
  < /docker-registry/contrib/boto_header_patch.diff
+
+# Install swift driver
+RUN pip install docker-registry-driver-swift
 
 ENV DOCKER_REGISTRY_CONFIG /docker-registry/config/config_sample.yml
 ENV SETTINGS_FLAVOR dev
